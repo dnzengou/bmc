@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>BMC – Editable (ESA InCubed)</title>
+<style>
+body { font-family: Segoe UI, Arial; background:#f4f6f9; padding:30px; }
+h2 { color:#003d6b; }
+.toolbar { margin-bottom:15px; }
+button { margin-right:10px; padding:6px 12px; }
+.bmc { width:100%; border-collapse:collapse; }
+th { background:#003d6b; color:#fff; padding:10px; }
+td { border:1px solid #aaa; vertical-align:top; }
+textarea { width:100%; min-height:130px; border:none; resize:vertical; font-family:inherit; }
+@media print { .toolbar{display:none;} textarea{border:none;} }
+</style>
+</head>
+<body>
+<h2>Business Model Canvas – Editable (ESA / InCubed)</h2>
+
+<div class="toolbar">
+<input id="project" placeholder="Project name" />
+<button onclick="saveJSON()">Save JSON</button>
+<button onclick="loadJSON()">Load JSON</button>
+<input type="file" id="fileInput" hidden />
+</div>
+
+<table class="bmc">
+<tr><th>Key Partners</th><th>Key Activities</th><th>Value Proposition</th></tr>
+<tr>
+<td><textarea id="Key Partners"></textarea></td>
+<td><textarea id="Key Activities"></textarea></td>
+<td><textarea id="Value Proposition"></textarea></td>
+</tr>
+<tr><th>Customer Relationships</th><th>Customer Segments</th><th>Key Resources</th></tr>
+<tr>
+<td><textarea id="Customer Relationships"></textarea></td>
+<td><textarea id="Customer Segments"></textarea></td>
+<td><textarea id="Key Resources"></textarea></td>
+</tr>
+<tr><th>Channels</th><th>Cost Structure</th><th>Revenue Streams</th></tr>
+<tr>
+<td><textarea id="Channels"></textarea></td>
+<td><textarea id="Cost Structure"></textarea></td>
+<td><textarea id="Revenue Streams"></textarea></td>
+</tr>
+</table>
+
+<script>
+const fields = [
+ 'Key Partners','Key Activities','Value Proposition',
+ 'Customer Relationships','Customer Segments','Key Resources',
+ 'Channels','Cost Structure','Revenue Streams'
+];
+
+function saveJSON(){
+ const data = { project: document.getElementById('project').value };
+ fields.forEach(f=>data[f]=document.getElementById(f).value);
+ const blob = new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+ const a = document.createElement('a');
+ a.href = URL.createObjectURL(blob);
+ a.download = (data.project||'bmc')+'.json';
+ a.click();
+}
+
+function loadJSON(){ document.getElementById('fileInput').click(); }
+
+document.getElementById('fileInput').addEventListener('change', e=>{
+ const file = e.target.files[0];
+ const reader = new FileReader();
+ reader.onload = () => {
+  const data = JSON.parse(reader.result);
+  document.getElementById('project').value = data.project||'';
+  fields.forEach(f=>{ if(data[f]) document.getElementById(f).value=data[f]; });
+ };
+ reader.readAsText(file);
+});
+</script>
+</body>
+</html>
